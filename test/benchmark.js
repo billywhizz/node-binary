@@ -4,7 +4,7 @@ var sys = require("sys");
 
 var iter = 1000000;
 
-var buff = new Buffer(647 * iter);
+var buff = new Buffer(29 * iter);
 
 var key = "hello";
 var record = [

@@ -163,9 +163,13 @@ class Binary : public ObjectWrap {
 					*buf++ = fields->Get(name)->ToInteger()->Value();
 				}
 				else if(strcmp(*type, "string") == 0) {
-					String::AsciiValue value(fields->Get(name));
-					strcpy(buf, *value);
-					buf += value.length();
+					Local<String> s = fields->Get(name)->ToString();
+					//String::Utf8Value value(fields->Get(name));
+					//strcpy(buf, *value);
+					//strcpy(buf, fields->Get(name)->ToString());
+					//size_t towrite = MIN((unsigned long) fields->Get(name)->Length(), buffer->length_ - offset);
+					int written = s->WriteAscii(buf, 0, s->Length(), String::HINT_MANY_WRITES_EXPECTED);
+					buf += s->Length();
 				}
 				else {
 					return ThrowException(Exception::Error(String::New("Unknown Type")));
