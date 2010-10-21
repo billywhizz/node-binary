@@ -163,7 +163,7 @@ class Binary : public ObjectWrap {
 					*buf++ = fields->Get(name)->ToInteger()->Value();
 				}
 				else if(strcmp(*type, "string") == 0) {
-					String::Utf8Value value(fields->Get(name));
+					String::AsciiValue value(fields->Get(name));
 					strcpy(buf, *value);
 					buf += value.length();
 				}

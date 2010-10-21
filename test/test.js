@@ -2,22 +2,22 @@ var sys = require("sys");
 var binary = require("../lib/binary");
 var assert = require("assert");
 
-var buff = new Buffer(4096);
+var buff = new Buffer(136);
 var bin = new binary.Binary();
 
 function getSize(message) {
 	var len = 0;
 	message.forEach(function(field) {
-		if(field.int16) {
+		if(field.int16 != null) {
 			len += 2;
 		}
-		if(field.int32) {
+		if(field.int32 != null) {
 			len += 4;
 		}
-		if(field.int) {
+		if(field.int != null) {
 			len++;
 		}
-		if(field.string) {
+		if(field.string != null) {
 			len += field.string.length;
 		}
 	});
@@ -35,14 +35,14 @@ var record = [
 	{"int16": 65535},
 	{"int32": 0},
 	{"int32": 128},
-	{"string": "goodbye"},
 	{"int32": 65535},
 	{"string": "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"},
-	{"int32": 65536}
+	{"int32": 65536},
+	{"string": "goodbye"}
 ];
 
 function unpack(buff) {
-	var tmp = bin.unpack("ooonnnnnNNs7Ns100N", 0, buff);
+	var tmp = bin.unpack("ooonnnnnNNNs100Ns7", 0, buff);
 	return [
 		{"int": tmp[0]},
 		{"int": tmp[1]},
@@ -54,15 +54,15 @@ function unpack(buff) {
 		{"int16": tmp[7]},
 		{"int32": tmp[8]},
 		{"int32": tmp[9]},
-		{"string": tmp[10]},
-		{"int32": tmp[11]},
-		{"string": tmp[12]},
-		{"int32": tmp[13]}
+		{"int32": tmp[10]},
+		{"string": tmp[11]},
+		{"int32": tmp[12]},
+		{"string": tmp[13]}
 	];
 }
 
 size = bin.pack(record, buff, 0);
-//assert.equal(size, getSize(record));
+assert.equal(size, getSize(record));
 buff = buff.slice(0, size);
 sys.puts(sys.inspect(record, true, 100));
 sys.puts(sys.inspect(unpack(buff), true, 100));
