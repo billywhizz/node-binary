@@ -1,6 +1,5 @@
-var binary = require("binary");
+var binary = require("../lib/binary");
 var bin = new binary.Binary();
-var BSON = require('bson').BSON;
 
 var iter = process.ARGV[2];
 
@@ -52,7 +51,6 @@ var record = [
 
 function displayResults(name, size, recs, time, bytes, sep) {
 	if(!sep) sep = ",";
-	//console.log(name + ": Recs: " + recs + ", Time: " + time + ", Bytes: " + bytes + ", Rec/Sec: " + recs/time + ", MBit/sec: " +  parseInt((((bytes)/time)*8)/(1024*1024)));
 	console.log(name + sep + size + sep + recs + sep + time + sep + bytes + sep + (recs/time).toFixed(2) + sep +  parseInt((((bytes)/time)*8)/(1024*1024)));
 }
 
@@ -64,11 +62,9 @@ function runtest() {
 	var recs = 0;
 	var then = new Date().getTime();
 	var written = bin.pack(record, buff, bytes);
-	//buff.slice(0, written).pprint();
 	
 	for(var i=0; i<iter; i++) {
 		var written = bin.pack(record, buff, bytes);
-		//buff.slice(bytes, bytes + written).pprint();
 		bytes += written;
 		recs++;
 	}
@@ -81,7 +77,6 @@ function runtest() {
 	var bytes = 0;
 	var recs = 0;
 	var rec = JSON.stringify(record);
-	//console.log(rec);
 	var then = new Date().getTime();
 	
 	for(var i=0; i<iter; i++) {
@@ -98,7 +93,6 @@ function runtest() {
 	var bytes = 0;
 	var recs = 0;
 	var rec = JSON.stringify(record);
-	//console.log(rec);
 	var then = new Date().getTime();
 	
 	for(var i=0; i<iter; i++) {
@@ -115,7 +109,6 @@ function runtest() {
 	var bytes = 0;
 	var recs = 0;
 	var rec = JSON.stringify(record);
-	//console.log(rec);
 	var then = new Date().getTime();
 	
 	for(var i=0; i<iter; i++) {
@@ -131,7 +124,6 @@ function runtest() {
 	var bytes = 0;
 	var recs = 0;
 	var rec = new Buffer(JSON.stringify(record), "ascii");
-	//rec.pprint();
 	var buff = new Buffer(rec.length * iter);
 	var then = new Date().getTime();
 	
@@ -144,22 +136,6 @@ function runtest() {
 	var now = new Date().getTime();
 	var time = (now-then)/1000;
 	displayResults("Buffer.copy", rec.length, recs, time, bytes);
-	
-	/*
-	var bytes = 0;
-	var recs = 0;
-	var then = new Date().getTime();
-	
-	for(var i=0; i<iter; i++) {
-		buff = msgpack.pack(record);
-		bytes += buff.length;
-		recs++;
-	}
-	
-	var now = new Date().getTime();
-	var time = (now-then)/1000;
-	displayResults("msgpack.pack", recs, time, bytes);
-	*/
 	
 	var int_sym = "int";
 	var int16_sym = "int16";
@@ -184,17 +160,6 @@ function runtest() {
 			else if(int32_sym in prop) {
 				buff += "3:" + prop.int32;
 			}
-	/*
-			for(name in prop) {
-				buff += "{\"" + name + "\":";
-				if(name == "string") {
-					buff += "\"" + prop[name] + "\"}";
-				}
-				else {
-					buff += prop[name] + "}";
-				}
-			}
-	*/
 			if(i<len) {
 				buff += ",";
 			}
@@ -207,7 +172,7 @@ function runtest() {
 	var recs = 0;
 	var rec = encode(record);
 	var buff = new Buffer(rec.length * iter);
-	//console.log(encode(record));
+
 	var then = new Date().getTime();
 	
 	for(var i=0; i<iter; i++) {
@@ -252,24 +217,6 @@ function runtest() {
 	var time = (now-then)/1000;
 	displayResults("string.concat", rec.length, recs, time, bytes);
 
-/*
-	var bytes = 0;
-	var recs = 0;
-	var rec = {"data": record};
-	var buff = "";
-	var then = new Date().getTime();
-	
-	for(var i=0; i<iter; i++) {
-		buff += rec;
-		var pp = BSON.serialize(rec);
-		bytes += pp.length;
-		recs++;
-	}
-	
-	var now = new Date().getTime();
-	var time = (now-then)/1000;
-	displayResults("BSON.serialize", rec.length, recs, time, bytes);
-*/
 }
 for(var i=0; i<process.ARGV[3]; i++) {
 	runtest();
